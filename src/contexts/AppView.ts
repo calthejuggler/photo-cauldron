@@ -5,7 +5,7 @@ import {
 	useContext,
 } from "react";
 
-export type ViewT = "folders" | "swipe";
+export type ViewT = "folders" | "swipe" | "confirmation";
 
 export const AppView = createContext<{
 	view: ViewT;

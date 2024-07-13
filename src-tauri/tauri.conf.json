@@ -22,8 +22,11 @@
 				"asset": true,
 				"assetScope": ["$APPDATA/*"]
 			},
-			"globalShortcut": {
-				"all": true
+			"window": {
+				"setFullscreen": true
+			},
+			"process": {
+				"exit": true
 			}
 		},
 		"windows": [

@@ -1,6 +1,7 @@
 import { useAppView } from "@/contexts/AppView";
 import { dialog, invoke } from "@tauri-apps/api";
 import { pictureDir } from "@tauri-apps/api/path";
+import { appWindow } from "@tauri-apps/api/window";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
@@ -55,6 +56,8 @@ export const FoldersForm = () => {
 			});
 
 			setView("swipe");
+
+			appWindow.setFullscreen(true);
 		} catch (error) {
 			toast("There was an error while initializing the folders.");
 			console.error(error);

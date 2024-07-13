@@ -1,1 +1,1 @@
-bunx @biomejs/biome check --write .
+bunx lint-staged

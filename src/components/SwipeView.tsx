@@ -3,11 +3,7 @@ import { convertFileSrc } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import {
-	isRegistered,
-	registerAll,
-	unregisterAll,
-} from "@tauri-apps/api/globalShortcut";
+import { registerAll, unregisterAll } from "@tauri-apps/api/globalShortcut";
 
 export const SwipeView = () => {
 	const [photos, setPhotos] = useState<string[] | null>(null);

@@ -1,119 +1,80 @@
+import { dialog, invoke } from "@tauri-apps/api";
+import { pictureDir } from "@tauri-apps/api/path";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Button } from "./ui/button";
-import {
-	Form,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormControl,
-	FormDescription,
-	FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
+import { useAppView } from "@/contexts/AppView";
+import { toast } from "sonner";
 
-const fileSchema = z.object({
-	location: z.string().min(1, "Photo location is required"),
-	good: z.string().min(1, "Good folder is required"),
-	bad: z.string().min(1, "Bad folder is required"),
-	maybe: z.string().min(1, "Maybe folder is required"),
-});
+const FolderButton = ({
+	folder,
+	setFolder,
+	name,
+}: {
+	folder: string | string[] | null;
+	setFolder: Dispatch<SetStateAction<string | string[] | null>>;
+	name: string;
+}) => {
+	return (
+		<div className="flex items-center gap-2 mx-auto">
+			<Button
+				type="button"
+				variant={folder != null ? "destructive" : "outline"}
+				onClick={async () => {
+					const res = await dialog.open({
+						title: `Select ${name[0].toUpperCase() + name.slice(1)} Folder`,
+						directory: true,
+						recursive: true,
+						defaultPath: await pictureDir(),
+					});
 
-type FileSchema = z.infer<typeof fileSchema>;
+					setFolder(res);
+				}}
+			>
+				{folder != null ? `Change ${name} folder` : `Select ${name} folder`}
+			</Button>
+			{folder}
+		</div>
+	);
+};
 
 export const FoldersForm = () => {
-	const form = useForm<FileSchema>({
-		resolver: zodResolver(fileSchema),
-		defaultValues: {
-			location: "",
-			good: "",
-			bad: "",
-			maybe: "",
-		},
-	});
+	const [good, setGood] = useState<string | string[] | null>(null);
+	const [bad, setBad] = useState<string | string[] | null>(null);
+	const [maybe, setMaybe] = useState<string | string[] | null>(null);
+	const [photos, setPhotos] = useState<string | string[] | null>(null);
 
-	const onSubmit: SubmitHandler<FileSchema> = (values: FileSchema) => {
-		console.log(values);
+	const { setView } = useAppView();
+
+	const handleContinue = async () => {
+		try {
+			await invoke("initialize", {
+				photosDir: photos,
+				goodDir: good,
+				badDir: bad,
+				maybeDir: maybe,
+			});
+
+			setView("swipe");
+		} catch (error) {
+			toast("There was an error while initializing the folders.");
+			console.error(error);
+		}
 	};
 
-	const onError: SubmitErrorHandler<FileSchema> = (error) => {
-		if (error.bad) toast(error.bad.message);
-		if (error.good) toast(error.good.message);
-		if (error.maybe) toast(error.maybe.message);
-		if (error.location) toast(error.location.message);
-	};
 	return (
-		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(onSubmit, onError)}
-				className="space-y-2"
-			>
-				<h1 className="text-3xl font-bold">Photos</h1>
-				<FormField
-					control={form.control}
-					name="location"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Photos Location</FormLabel>
-							<FormControl>
-								<Input type="file" {...field} />
-							</FormControl>
-							<FormDescription>
-								This is the folder where the photos are currently.
-							</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="good"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Good</FormLabel>
-							<FormControl>
-								<Input type="file" {...field} />
-							</FormControl>
-							<FormDescription>
-								This is the folder where "good" photos will be stored.
-							</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="bad"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Bad</FormLabel>
-							<FormControl>
-								<Input type="file" {...field} />
-							</FormControl>
-							<FormDescription>
-								This is the folder where "bad" photos will be stored.
-							</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name="maybe"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Maybe</FormLabel>
-							<FormControl>
-								<Input type="file" {...field} />
-							</FormControl>
-							<FormDescription>
-								This is the folder where "maybe" photos will be stored.
-							</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<Button type="submit">Ready?</Button>
-			</form>
-		</Form>
+		<div className="flex flex-col items-center justify-center h-screen">
+			<div className="flex flex-col gap-2">
+				<h1 className="text-4xl font-bold text-center">Select Folders</h1>
+				<FolderButton folder={photos} setFolder={setPhotos} name="photos" />
+				<FolderButton folder={good} setFolder={setGood} name="good" />
+				<FolderButton folder={bad} setFolder={setBad} name="bad" />
+				<FolderButton folder={maybe} setFolder={setMaybe} name="maybe" />
+				{photos != null && (
+					<Button type="button" onClick={handleContinue}>
+						Continue
+					</Button>
+				)}
+			</div>
+		</div>
 	);
 };

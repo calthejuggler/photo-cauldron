@@ -1,15 +1,15 @@
 import { invoke } from "@tauri-apps/api";
+import { registerAll, unregisterAll } from "@tauri-apps/api/globalShortcut";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { registerAll, unregisterAll } from "@tauri-apps/api/globalShortcut";
 
 export const SwipeView = () => {
 	const [photos, setPhotos] = useState<string[] | null>(null);
 	const [currentIndex, setCurrentIndex] = useState(0);
 
-	const getPhotos = async () => {
+	const getPhotos = useCallback(async () => {
 		setPhotos(null);
 		try {
 			const res = await invoke("get_photos");
@@ -23,27 +23,22 @@ export const SwipeView = () => {
 			toast("There was an error while loading the photos.");
 			console.error(e);
 		}
-	};
+	}, []);
 
-	const swipeRight = () => {
-		console.log("Right");
-		setCurrentIndex((prev) =>
-			prev < (photos?.length ?? 0) - 1 ? prev + 1 : prev,
-		);
-	};
-	const swipeLeft = () => {
-		console.log("Left");
-		setCurrentIndex((prev) =>
-			prev < (photos?.length ?? 0) - 1 ? prev + 1 : prev,
-		);
-	};
-	const swipeUp = () => {
+	const swipeRight = useCallback(() => {
+		setCurrentIndex((prev) => prev + 1);
+	}, []);
+
+	const swipeLeft = useCallback(() => {
+		setCurrentIndex((prev) => prev + 1);
+	}, []);
+	const swipeUp = useCallback(() => {
 		console.log("Up");
-	};
+	}, []);
 
-	const undo = () => {
+	const undo = useCallback(() => {
 		console.log("Undo");
-	};
+	}, []);
 
 	useEffect(() => {
 		getPhotos();
@@ -55,7 +50,7 @@ export const SwipeView = () => {
 		return () => {
 			unregisterAll();
 		};
-	}, []);
+	}, [swipeUp, swipeLeft, swipeRight, undo, getPhotos]);
 
 	if (photos == null) return <div>Loading...</div>;
 	if (photos.length === 0) return <div>No photos found</div>;
@@ -72,7 +67,7 @@ export const SwipeView = () => {
 				<img
 					className="grow max-h-[80vh] max-w-[90vw] object-contain"
 					src={photos[currentIndex]}
-					alt="Current photo w-full"
+					alt={photos[currentIndex]}
 				/>
 				<Button onClick={swipeRight}>Good</Button>
 			</div>

@@ -1,4 +1,4 @@
-import path from "path";
+import path from "bun:path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 

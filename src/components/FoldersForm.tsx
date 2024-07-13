@@ -1,9 +1,9 @@
+import { useAppView } from "@/contexts/AppView";
 import { dialog, invoke } from "@tauri-apps/api";
 import { pictureDir } from "@tauri-apps/api/path";
-import { Dispatch, SetStateAction, useState } from "react";
-import { Button } from "./ui/button";
-import { useAppView } from "@/contexts/AppView";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
 
 const FolderButton = ({
 	folder,

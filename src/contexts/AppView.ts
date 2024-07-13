@@ -1,4 +1,9 @@
-import { createContext, Dispatch, SetStateAction, useContext } from "react";
+import {
+	type Dispatch,
+	type SetStateAction,
+	createContext,
+	useContext,
+} from "react";
 
 export type ViewT = "folders" | "swipe";
 

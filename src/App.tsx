@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 import { FoldersForm } from "./components/FoldersForm";
-import { AppView, ViewT } from "./contexts/AppView";
 import { SwipeView } from "./components/SwipeView";
+import { AppView, type ViewT } from "./contexts/AppView";
 
 function App() {
 	const [view, setView] = useState<ViewT>("folders");

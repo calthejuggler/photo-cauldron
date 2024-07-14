@@ -72,7 +72,7 @@ export const FoldersForm = () => {
 				<FolderButton folder={good} setFolder={setGood} name="good" />
 				<FolderButton folder={bad} setFolder={setBad} name="bad" />
 				<FolderButton folder={maybe} setFolder={setMaybe} name="maybe" />
-				{photos != null && (
+				{photos != null && good != null && bad != null && maybe != null && (
 					<Button type="button" onClick={handleContinue}>
 						Continue
 					</Button>

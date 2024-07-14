@@ -1,9 +1,11 @@
+import { useEventListener } from "@/hooks/useEventListener";
 import { invoke } from "@tauri-apps/api";
 import { convertFileSrc } from "@tauri-apps/api/tauri";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAppView } from "../contexts/AppView";
 import { Button } from "./ui/button";
+import { Instructions } from "./Instructions";
 
 type Photo = { path: string; name: string };
 
@@ -12,6 +14,36 @@ export const SwipeView = () => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 
 	const { setView } = useAppView();
+
+	const handleKeyDown = (e: KeyboardEvent) => {
+		switch (e.key) {
+			case "ArrowRight":
+			case "D":
+			case "L":
+			case "d":
+			case "l":
+				return swipeRight();
+			case "ArrowLeft":
+			case "A":
+			case "H":
+			case "a":
+			case "h":
+				return swipeLeft();
+			case "ArrowUp":
+			case "W":
+			case "K":
+			case "w":
+			case "k":
+				return swipeUp();
+			case "Backspace":
+			case "z":
+			case "Z":
+				if (["z", "Z"].includes(e.key) && !e.ctrlKey) return;
+				return undo();
+		}
+	};
+
+	useEventListener("keydown", handleKeyDown);
 
 	const getPhotos = useCallback(async () => {
 		setPhotos(null);
@@ -29,7 +61,7 @@ export const SwipeView = () => {
 		}
 	}, []);
 
-	const goToNextPhoto = useCallback(() => {
+	const goToNextPhoto = () => {
 		setCurrentIndex((prev) => {
 			if (photos == null) return prev;
 			if (prev + 1 >= photos?.length) {
@@ -39,9 +71,9 @@ export const SwipeView = () => {
 
 			return prev + 1;
 		});
-	}, [photos, setView]);
+	};
 
-	const swipeRight = useCallback(async () => {
+	const swipeRight = async () => {
 		if (photos == null) return;
 		try {
 			await invoke("move_to", {
@@ -53,9 +85,9 @@ export const SwipeView = () => {
 			toast("There was an error while moving the photo to the good directory.");
 			console.error(e);
 		}
-	}, [currentIndex, photos, goToNextPhoto]);
+	};
 
-	const swipeLeft = useCallback(async () => {
+	const swipeLeft = async () => {
 		if (photos == null) return;
 		try {
 			await invoke("move_to", {
@@ -67,14 +99,14 @@ export const SwipeView = () => {
 			toast("There was an error while moving the photo to the bad directory.");
 			console.error(e);
 		}
-	}, [currentIndex, photos, goToNextPhoto]);
+	};
 
-	const swipeUp = useCallback(async () => {
+	const swipeUp = async () => {
 		if (photos == null) return;
 		try {
 			await invoke("move_to", {
 				dirType: "maybe",
-				currentPath: photos[currentIndex].path,
+				index: currentIndex,
 			});
 			goToNextPhoto();
 		} catch (e) {
@@ -83,49 +115,21 @@ export const SwipeView = () => {
 			);
 			console.error(e);
 		}
-	}, [currentIndex, photos, goToNextPhoto]);
+	};
 
-	// const undo = useCallback(async () => {
-	//   console.log("Undo");
-	// }, []);
-
-	// const handleKeyDown = useCallback(
-	//   (e: { key: string }) => {
-	//     switch (e.key) {
-	//       case "ArrowRight":
-	//       case "D":
-	//       case "L":
-	//         return swipeRight();
-	//       case "ArrowLeft":
-	//       case "A":
-	//       case "H":
-	//         return swipeLeft();
-	//       case "ArrowUp":
-	//       case "W":
-	//       case "K":
-	//         return swipeUp();
-	//       case "CommandOrControl+Z":
-	//       case "Backspace":
-	//         return undo();
-	//     }
-	//   },
-	//   [swipeLeft, swipeRight, swipeUp, undo],
-	// );
-
-	const containerRef = useRef<HTMLDivElement>(null);
+	const undo = async () => {
+		console.log("Undo");
+	};
 
 	useEffect(() => {
 		getPhotos();
-		containerRef.current?.focus();
-
-		// appWindow.listen("keydown", handleKeyDown);
 	}, [getPhotos]);
 
 	if (photos == null) return <div>Loading...</div>;
 	if (photos.length === 0) return <div>No photos found</div>;
 
 	return (
-		<div className="w-full p-4" ref={containerRef}>
+		<div className="w-full p-4">
 			<div className="mx-auto text-center mb-2">
 				<Button onClick={swipeUp}>Maybe</Button>
 			</div>
@@ -141,6 +145,7 @@ export const SwipeView = () => {
 			<div className="text-center mt-2">
 				<Button onClick={() => setCurrentIndex(0)}>Refresh photos</Button>
 			</div>
+			<Instructions />
 		</div>
 	);
 };

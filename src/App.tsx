@@ -5,6 +5,7 @@ import { FoldersForm } from "./components/FoldersForm";
 import { SwipeView } from "./components/SwipeView";
 import { Button } from "./components/ui/button";
 import { AppView, type ViewT } from "./contexts/AppView";
+import { appWindow } from "@tauri-apps/api/window";
 
 function App() {
 	const [view, setView] = useState<ViewT>("folders");
@@ -16,7 +17,13 @@ function App() {
 				{view === "confirmation" ? (
 					<div>
 						<p className="text-center text-4xl mb-2 select-none">Done!</p>
-						<Button onClick={() => setView("folders")} className="mr-1">
+						<Button
+							onClick={() => {
+								appWindow.setFullscreen(false);
+								setView("folders");
+							}}
+							className="mr-1"
+						>
 							Sort more photos
 						</Button>
 						or

@@ -5,6 +5,9 @@ Items to do for the project
 ## Features
 
 - [ ] Undo
+- [ ] Confirmation on movement
+- [ ] Animations
+- [ ] Updater
 
 ## Bugs
 
@@ -14,3 +17,10 @@ Items to do for the project
 - [ ] No `clone`
 - [ ] No `unwrap`
 - [ ] Better file structure
+
+## Meta
+
+- [ ] Add a license
+- [ ] README
+- [ ] Add a changelog
+- [ ] Add a contributing guide

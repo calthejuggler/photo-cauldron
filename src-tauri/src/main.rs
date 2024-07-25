@@ -52,13 +52,17 @@ impl AppState {
                 if entry.path().is_file() {
                     let extensions = vec!["jpg", "png", "gif", "tiff", "webp", "heic"];
 
+                    println!("{:?}", entry.path().extension().unwrap());
+
                     if extensions.contains(
                         &entry
                             .path()
                             .extension()
                             .unwrap_or_default()
                             .to_str()
-                            .unwrap(),
+                            .unwrap()
+                            .to_lowercase()
+                            .as_str(),
                     ) {
                         let path = entry.path();
                         let name = path.file_name().unwrap().to_str().unwrap().to_string();

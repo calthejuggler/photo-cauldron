@@ -5,9 +5,6 @@ on:
     branches:
       - release
 
-# This is the example from the readme.
-# On each push to the `release` branch it will create or update a GitHub release, build your app, and upload the artifacts to the release.
-
 jobs:
   publish-tauri:
     permissions:
@@ -54,6 +51,7 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: "App v__VERSION__"

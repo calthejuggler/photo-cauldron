@@ -50,6 +50,14 @@
 				"icons/icon.icns",
 				"icons/icon.ico"
 			]
+		},
+		"updater": {
+			"active": true,
+			"endpoints": [
+				"https://gist.githubusercontent.com/calthejuggler/77a1b473bea89e20da4147daf8ffd1ce/raw/04f40a127343d4b34ce771c42a2ff66eb54985ef/photo-cauldron-update-file.json"
+			],
+			"dialog": true,
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhCNkY1MzEwNzVFNzFDMDgKUldRSUhPZDFFRk52aTBkaTNua2t5SENhN0t5NUZkUVRFaWNqYjhLOHVwNmlTb2FvbW93MmVjblYK"
 		}
 	}
 }
